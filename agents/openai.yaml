@@ -1,0 +1,3 @@
+display_name: 单点场景生图 PPT
+short_description: 生成高视觉图片型PPT
+default_prompt: 帮我为一个单点沟通场景制作高视觉图片型 PPT，请先判断是否适合生图流程，并澄清受众、风格、页数、Logo 和输出格式。
