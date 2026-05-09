@@ -18,11 +18,11 @@ help:
 	@echo "Semantic asset tools:"
 	@echo "  make semantic-init OUT_DIR=./work/semantic REF=./slides/page-01.png"
 	@echo "  make semantic-preflight INVENTORY=./visual_inventory.json MANIFEST=./asset_manifest.json ANCHORS=./asset_anchors.json"
-	@echo "  make build-semantic INVENTORY=./visual_inventory.json MANIFEST=./asset_manifest.json OUT_PPTX=./output/reconstructed.pptx"
+	@echo "  make build-semantic INVENTORY=./visual_inventory.json MANIFEST=./asset_manifest.json OUT_PPTX=./output/reconstructed.pptx LAYOUT_RULES=./layout_rules.json BUILD_REPORT=./reports/build_report.json"
 	@echo "  make cut GRID=./output/generated/icons_grid.png ROWS=3 COLS=4 NAMES=a,b,c,d OUT_DIR=./output/assets MANIFEST=./output/asset_manifest.json"
 	@echo "  make cut GRID_MANIFEST=./prompts/assets_cycle_1.json OUT_DIR=./assets MANIFEST=./asset_manifest.json"
 	@echo "  make compare REF=./output/reference/page-01.png RENDER=./output/render/page-01.png COMPARE_DIR=./output/compare"
-	@echo "  make validate PPTX=./output/reconstructed.pptx REF=./output/reference/page-01.png MANIFEST=./output/asset_manifest.json INVENTORY=./output/visual_inventory.json REPORT=./output/validation_report.md"
+	@echo "  make validate PPTX=./output/reconstructed.pptx REF=./output/reference/page-01.png MANIFEST=./output/asset_manifest.json INVENTORY=./output/visual_inventory.json BUILD_REPORT=./reports/build_report.json REPORT=./output/validation_report.md"
 	@echo ""
 	@echo "Local demos:"
 	@echo "  make demo"
@@ -59,7 +59,7 @@ build-semantic:
 	@test -n "$(INVENTORY)" || (echo "INVENTORY is required" && exit 2)
 	@test -n "$(MANIFEST)" || (echo "MANIFEST is required" && exit 2)
 	@test -n "$(OUT_PPTX)" || (echo "OUT_PPTX is required" && exit 2)
-	$(PYTHON) scripts/build_semantic_deck.py --inventory "$(INVENTORY)" --manifest "$(MANIFEST)" --out-pptx "$(OUT_PPTX)" $(if $(BASE_DIR),--base-dir "$(BASE_DIR)",) $(if $(BUILD_REPORT),--report "$(BUILD_REPORT)",)
+	$(PYTHON) scripts/build_semantic_deck.py --inventory "$(INVENTORY)" --manifest "$(MANIFEST)" --out-pptx "$(OUT_PPTX)" $(if $(BASE_DIR),--base-dir "$(BASE_DIR)",) $(if $(LAYOUT_RULES),--layout-rules "$(LAYOUT_RULES)",) $(if $(BUILD_REPORT),--report "$(BUILD_REPORT)",)
 
 cut:
 	@test -n "$(OUT_DIR)" || (echo "OUT_DIR is required" && exit 2)
@@ -82,7 +82,7 @@ compare:
 validate:
 	@test -n "$(PPTX)" || (echo "PPTX is required" && exit 2)
 	@test -n "$(REPORT)" || (echo "REPORT is required" && exit 2)
-	$(PYTHON) scripts/validate_semantic_deck.py --pptx "$(PPTX)" $(if $(REF),--reference "$(REF)",) $(if $(MANIFEST),--manifest "$(MANIFEST)",) $(if $(INVENTORY),--inventory "$(INVENTORY)",) $(if $(FULL_SLIDE_SIZE),--full-slide-size "$(FULL_SLIDE_SIZE)",) --out "$(REPORT)"
+	$(PYTHON) scripts/validate_semantic_deck.py --pptx "$(PPTX)" $(if $(REF),--reference "$(REF)",) $(if $(MANIFEST),--manifest "$(MANIFEST)",) $(if $(INVENTORY),--inventory "$(INVENTORY)",) $(if $(BUILD_REPORT),--build-report "$(BUILD_REPORT)",) $(if $(FULL_SLIDE_SIZE),--full-slide-size "$(FULL_SLIDE_SIZE)",) --out "$(REPORT)"
 
 semantic-test:
 	$(PYTHON) tests/test_semantic_workflow.py

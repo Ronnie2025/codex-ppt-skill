@@ -20,6 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--reference", action="append", default=[], help="Reference image to hash-check. Repeat per slide.")
     parser.add_argument("--manifest", help="asset_manifest.json path.")
     parser.add_argument("--inventory", help="visual_inventory.json path.")
+    parser.add_argument("--build-report", help="Optional build_report.json with text fitting and layout QA facts.")
     parser.add_argument("--out", required=True, help="Markdown validation report path.")
     parser.add_argument("--full-slide-size", default="", help="Optional WxH full-slide media size to reject, e.g. 1672x941.")
     parser.add_argument("--near-full-slide-ratio", type=float, default=0.85, help="Flag media covering at least this share of full-slide area.")
@@ -169,6 +170,18 @@ def main() -> None:
     if manifest is not None and total_picture_objects < len(manifest):
         errors.append("pptx picture object count is lower than manifest entries")
     total_text_runs = sum(row["text_runs"] for row in slide_counts)
+
+    build_report = None
+    layout_qa = None
+    text_fit_rows = []
+    if args.build_report:
+        build_report = json.loads(Path(args.build_report).read_text(encoding="utf-8"))
+        layout_qa = build_report.get("layout_qa") if isinstance(build_report, dict) else None
+        if isinstance(layout_qa, dict) and layout_qa.get("error_count", 0):
+            errors.append("build report layout QA contains errors")
+        if isinstance(build_report, dict):
+            text_fit_rows = build_report.get("text_placements", [])[:]
+
     status = "PASS"
     if errors:
         status = "FAIL"
@@ -189,6 +202,7 @@ def main() -> None:
         f"- SVG media check: {'PASS' if not svg_media else 'FAIL'}",
         f"- Manifest entries: {len(manifest) if manifest is not None else 'not provided'}",
         f"- Inventory provided: {'yes' if inventory is not None else 'no'}",
+        f"- Build report provided: {'yes' if build_report is not None else 'no'}",
         f"- Inventory semantic asset items: {len(semantic_inventory_items)}",
         f"- PPT picture objects: {total_picture_objects}",
         f"- PPT text runs: {total_text_runs}",
@@ -202,6 +216,28 @@ def main() -> None:
     report += ["", "## Largest Embedded Media"]
     for item in sorted(media, key=lambda m: (m["size"] or [0, 0])[0] * (m["size"] or [0, 0])[1], reverse=True)[:10]:
         report.append(f"- {item['name']}: size {item['size']}, bytes {item['bytes']}")
+    report += ["", "## Text Layout QA"]
+    if layout_qa:
+        report.append(f"- Status: {layout_qa.get('status')}")
+        report.append(f"- Errors: {layout_qa.get('error_count', 0)}")
+        report.append(f"- Warnings: {layout_qa.get('warning_count', 0)}")
+        for err in layout_qa.get("errors", [])[:20]:
+            report.append(f"- ERROR {err.get('type')}: {err}")
+        for warn in layout_qa.get("warnings", [])[:30]:
+            report.append(f"- WARN {warn.get('type')}: {warn}")
+    else:
+        report.append("- Not provided. Pass `--build-report` to validate text fitting, collisions, z-order, and layout QA.")
+    if text_fit_rows:
+        fitted = [row for row in text_fit_rows if row.get("effective_font_size") != row.get("font_size")]
+        min_font = min((float(row.get("effective_font_size", 999)) for row in text_fit_rows), default=0)
+        max_overflow = max((
+            max(float(row.get("overflow_height_ratio", 0)), float(row.get("overflow_width_ratio", 0)))
+            for row in text_fit_rows
+        ), default=0)
+        report.append(f"- Native text objects in build report: {len(text_fit_rows)}")
+        report.append(f"- Auto-fitted text objects: {len(fitted)}")
+        report.append(f"- Minimum effective font size: {round(min_font, 2)} pt")
+        report.append(f"- Maximum estimated overflow ratio: {round(max_overflow, 4)}")
     report += ["", "## Result"]
     if status == "FAIL":
         report.extend([f"- FAIL: {err}" for err in errors])

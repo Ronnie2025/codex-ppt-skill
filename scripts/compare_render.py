@@ -16,6 +16,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--render", action="append", required=True, help="Rendered output slide image. Repeat per slide.")
     parser.add_argument("--out-dir", required=True, help="Comparison output directory.")
     parser.add_argument("--thumb-width", type=int, default=520, help="Contact sheet column width.")
+    parser.add_argument("--max-changed-pixel-pct", type=float, default=0.35, help="Warn when changed pixel share is above this value.")
+    parser.add_argument("--max-mad", type=float, default=35.0, help="Warn when mean absolute difference is above this value.")
     return parser.parse_args()
 
 
@@ -57,6 +59,14 @@ def main() -> None:
             "render_size": list(render.size),
             "mean_absolute_difference": round(mad, 3),
             "changed_pixel_pct_threshold_18": round(changed, 4),
+            "status": "PASS" if mad <= args.max_mad and changed <= args.max_changed_pixel_pct else "REVIEW",
+            "repair_hints": [
+                hint for hint, enabled in [
+                    ("large visual drift: inspect missing assets, z-order, panel sizes, and shape fills", mad > args.max_mad),
+                    ("many changed pixels: compare title/card positions and large decorative regions first", changed > args.max_changed_pixel_pct),
+                    ("if text is visibly noisy, rerun build with text-fit report and collision QA enabled", mad > args.max_mad or changed > args.max_changed_pixel_pct),
+                ] if enabled
+            ],
             "heatmap": str(heat_path),
         })
 
@@ -80,7 +90,8 @@ def main() -> None:
     sheet_path = out_dir / "contact_sheet.png"
     sheet.save(sheet_path)
     (out_dir / "comparison_metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(json.dumps({"contact_sheet": str(sheet_path), "slides": len(metrics)}, ensure_ascii=False))
+    status = "PASS" if all(item["status"] == "PASS" for item in metrics) else "REVIEW"
+    print(json.dumps({"contact_sheet": str(sheet_path), "slides": len(metrics), "status": status}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

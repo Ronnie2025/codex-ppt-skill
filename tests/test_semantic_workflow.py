@@ -158,6 +158,10 @@ class SemanticWorkflowTests(unittest.TestCase):
             "--report",
             str(WORK / "reports" / "build_report.json"),
         )
+        build_report = json.loads((WORK / "reports" / "build_report.json").read_text(encoding="utf-8"))
+        self.assertIn("layout_qa", build_report)
+        self.assertEqual(build_report["layout_qa"]["error_count"], 0)
+        self.assertEqual(build_report["text_objects"], len(build_report["text_placements"]))
         result = run_cmd(
             "scripts/validate_semantic_deck.py",
             "--pptx",
@@ -170,6 +174,8 @@ class SemanticWorkflowTests(unittest.TestCase):
             str(WORK / "asset_manifest.json"),
             "--inventory",
             str(WORK / "visual_inventory.json"),
+            "--build-report",
+            str(WORK / "reports" / "build_report.json"),
             "--full-slide-size",
             "1920x1080",
             "--out",

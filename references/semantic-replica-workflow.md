@@ -17,6 +17,7 @@ reference
 -> asset_manifest
 -> semantic input preflight
 -> build_semantic_deck
+-> text-fit and layout QA report
 -> render compare
 -> validation
 ```
@@ -190,16 +191,60 @@ Acceptable source types are `imagegen_asset`, `api_generated_asset`, and documen
 }
 ```
 
+## Text Fit, Collision, And Visual Regression
+
+The builder must not only count editable objects. It must record layout facts
+that can be inspected after the PPTX is built:
+
+- every text box: `slide`, `id`, `bbox_in`, `font_size`,
+  `effective_font_size`, `text_role`, `fit_mode`, `line_spacing_pt`,
+  `overflow_height_ratio`, `overflow_width_ratio`, `estimated_text_bbox_in`,
+  `parent_id`, and `z_index`;
+- every image asset: semantic unit id, source path, placement slot, fitted bbox,
+  and uniform contain rule;
+- layout QA: text overflow, text-text collision, text on non-decorative images,
+  out-of-slide bounds, and parent containment warnings.
+- text-on-image is an error by default. Allow it only when the inventory item
+  explicitly sets `text_overlay_allowed: true`, for example intentional white
+  text on a clean shield, badge, or button asset.
+
+Default text behavior:
+
+- `fit_mode=shrink` unless explicitly disabled.
+- Titles, subtitles, headers, pills, chips, tags, and badges default to
+  no-wrap; they should shrink before accidental one-character wrapping.
+- Body text may wrap, but must report overflow when estimated content exceeds
+  the inner text box.
+- Micro labels may go below the ordinary body font floor, but this must remain
+  visible in the build report as a warning or consciously accepted exception.
+
+Validation should pass `--build-report` to `validate_semantic_deck.py`. A deck
+with a clean media check but missing build-report layout QA is only a structure
+draft.
+
+Visual regression is a gate, not decoration:
+
+- render the PPTX to PNG/PDF;
+- run `compare_render.py` against the reference pages;
+- inspect the contact sheet for title wrapping, card text overflow, icon/text
+  collisions, lost decorative assets, and broken z-order;
+- if the compare status is `REVIEW`, update the inventory/layout rules and
+  rebuild rather than accepting the first PPTX.
+
 ## Build Rules
 
 - Use native PPT text for all readable text.
 - Keep line counts deliberate; do not let PowerPoint create accidental one-character wraps.
+- Use `fit_mode=shrink` and role-aware font floors for dense pages; avoid
+  solving overflow by silently shrinking ordinary body text into unreadability.
 - Use native shapes for cards, panels, frames, shadows, tables, dividers, and simple connectors.
 - Insert semantic visuals as independent PNG assets.
 - Fit images with uniform contain scaling.
 - Never stretch images on one axis.
 - Use `scripts/build_semantic_deck.py` for manifest-driven PPTX construction when the inventory fits the public schema.
 - Use `scripts/validate_semantic_inputs.py` before build; do not wait for PPTX validation to discover missing assets or raw crops.
+- Use `build_report.json` as the source of truth for text fitting, collision
+  checks, and fitted image positions.
 - Never insert SVG media in a path B final PPTX.
 - Never insert the full reference image or near-full-slide reference media in the final deck.
 - Do not use generic hand-drawn icons or low-fidelity native shapes as replacements for semantic visuals.
