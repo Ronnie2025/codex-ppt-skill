@@ -1,0 +1,20 @@
+{
+  "slide_size_px": [1920, 1080],
+  "font_policy": {
+    "default_font_face": "Microsoft YaHei",
+    "text_box_extra_room_pct": 12
+  },
+  "image_fit": "uniform_contain_only",
+  "allowed_source_types": ["imagegen_asset", "api_generated_asset", "provided_asset"],
+  "forbidden_media": [
+    "full_slide_reference_image",
+    "near_full_slide_reference_image",
+    "svg_media",
+    "raw_crop_asset",
+    "prompt_only_asset"
+  ],
+  "comparison": {
+    "diff_threshold": 18,
+    "changed_pixel_pct_target": 0.25
+  }
+}

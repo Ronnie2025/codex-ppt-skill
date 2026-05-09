@@ -61,6 +61,16 @@ def inventory_items(inventory: object) -> list[dict]:
             if isinstance(slide, dict):
                 items.extend([item for item in slide.get("items", []) if isinstance(item, dict)])
         return items
+    if isinstance(inventory.get("semantic_assets"), list):
+        items = []
+        for item in inventory["semantic_assets"]:
+            if not isinstance(item, dict):
+                continue
+            normalized = dict(item)
+            normalized.setdefault("id", item.get("semantic_unit_id"))
+            normalized.setdefault("class", item.get("source_type", "imagegen_asset"))
+            items.append(normalized)
+        return items
     return [item for item in inventory.get("items", []) if isinstance(item, dict)]
 
 

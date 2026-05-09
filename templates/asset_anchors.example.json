@@ -1,0 +1,16 @@
+[
+  {
+    "semantic_unit_id": "domain_icon_01",
+    "slide": 1,
+    "target_bbox_px": [140, 240, 120, 120],
+    "z_index": 20,
+    "placement_rule": "uniform contain scaling; no one-axis stretch"
+  },
+  {
+    "semantic_unit_id": "workflow_arrow_01",
+    "slide": 1,
+    "target_bbox_px": [420, 300, 180, 48],
+    "z_index": 15,
+    "placement_rule": "uniform contain scaling; no one-axis stretch"
+  }
+]

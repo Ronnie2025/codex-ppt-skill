@@ -6,6 +6,8 @@
     "semantic_unit_count": 1,
     "generated_grid": "generated/domain_icons_grid.png",
     "grid_cell": [0, 0],
+    "prompt_id": "domain_icons_grid_01",
+    "source_reference": "reference/page-01.png",
     "placement_rule": "uniform contain scaling; no one-axis stretch"
   },
   {
@@ -15,6 +17,8 @@
     "semantic_unit_count": 1,
     "generated_grid": "generated/workflow_arrows_grid.png",
     "grid_cell": [0, 1],
+    "prompt_id": "workflow_arrows_grid_01",
+    "source_reference": "reference/page-01.png",
     "placement_rule": "uniform contain scaling; no one-axis stretch"
   }
 ]

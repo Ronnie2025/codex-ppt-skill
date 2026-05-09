@@ -11,7 +11,7 @@ from typing import Any
 from PIL import Image
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.util import Inches, Pt
 
@@ -65,26 +65,43 @@ def as_emu(value_in: float) -> int:
 def add_text(slide, item: dict[str, Any], box: tuple[float, float, float, float], default_font: str) -> None:
     x, y, w, h = box
     shape = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
-    shape.vertical_anchor = MSO_ANCHOR.MIDDLE
+    vertical = str(item.get("vertical_anchor", "middle")).lower()
+    shape.vertical_anchor = {
+        "top": MSO_ANCHOR.TOP,
+        "middle": MSO_ANCHOR.MIDDLE,
+        "bottom": MSO_ANCHOR.BOTTOM,
+    }.get(vertical, MSO_ANCHOR.MIDDLE)
+    if item.get("rotation") is not None:
+        shape.rotation = float(item.get("rotation"))
     tf = shape.text_frame
     tf.clear()
+    tf.word_wrap = bool(item.get("word_wrap", True))
     tf.margin_left = Inches(item.get("margin_left", 0.03))
     tf.margin_right = Inches(item.get("margin_right", 0.03))
     tf.margin_top = Inches(item.get("margin_top", 0.02))
     tf.margin_bottom = Inches(item.get("margin_bottom", 0.02))
+    lines = str(item.get("text", "")).split("\n")
     p = tf.paragraphs[0]
-    p.text = str(item.get("text", ""))
+    p.text = lines[0] if lines else ""
     align = str(item.get("align", "left")).lower()
     p.alignment = {
         "left": PP_ALIGN.LEFT,
         "center": PP_ALIGN.CENTER,
         "right": PP_ALIGN.RIGHT,
     }.get(align, PP_ALIGN.LEFT)
-    for run in p.runs:
-        run.font.name = item.get("font_face", default_font)
-        run.font.size = Pt(float(item.get("font_size", 14)))
-        run.font.bold = bool(item.get("bold", False))
-        run.font.color.rgb = hex_to_rgb(item.get("color"), "003B7A")
+    for line in lines[1:]:
+        next_p = tf.add_paragraph()
+        next_p.text = line
+        next_p.alignment = p.alignment
+    for para in tf.paragraphs:
+        if item.get("line_spacing") is not None:
+            para.line_spacing = float(item.get("line_spacing"))
+        for run in para.runs:
+            run.font.name = item.get("font_face", default_font)
+            run.font.size = Pt(float(item.get("font_size", 14)))
+            run.font.bold = bool(item.get("bold", False))
+            run.font.italic = bool(item.get("italic", False))
+            run.font.color.rgb = hex_to_rgb(item.get("color"), "003B7A")
 
 
 def add_native_shape(slide, item: dict[str, Any], box: tuple[float, float, float, float]) -> None:
@@ -99,6 +116,8 @@ def add_native_shape(slide, item: dict[str, Any], box: tuple[float, float, float
         "oval": MSO_SHAPE.OVAL,
     }.get(shape_name, MSO_SHAPE.ROUNDED_RECTANGLE)
     shape = slide.shapes.add_shape(shape_type, Inches(x), Inches(y), Inches(w), Inches(h))
+    if item.get("rotation") is not None:
+        shape.rotation = float(item.get("rotation"))
     fill = str(item.get("fill", "FFFFFF"))
     if fill.lower() in {"none", "transparent"}:
         shape.fill.background()
@@ -114,6 +133,19 @@ def add_native_shape(slide, item: dict[str, Any], box: tuple[float, float, float
     else:
         shape.line.color.rgb = hex_to_rgb(str(line), "C7DAF6")
         shape.line.width = Pt(float(item.get("line_width", 1)))
+
+
+def add_native_line(slide, item: dict[str, Any], box: tuple[float, float, float, float]) -> None:
+    x, y, w, h = box
+    connector = slide.shapes.add_connector(
+        MSO_CONNECTOR.STRAIGHT,
+        Inches(x),
+        Inches(y),
+        Inches(x + w),
+        Inches(y + h),
+    )
+    connector.line.color.rgb = hex_to_rgb(str(item.get("line", item.get("color", "5A93EA"))), "5A93EA")
+    connector.line.width = Pt(float(item.get("line_width", 1.5)))
 
 
 def fit_contain(img_path: Path, box: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
@@ -144,7 +176,9 @@ def add_asset(slide, item: dict[str, Any], asset: dict[str, Any], box: tuple[flo
     if not img_path.exists():
         raise FileNotFoundError(f"asset not found for {item.get('id')}: {img_path}")
     fx, fy, fw, fh = fit_contain(img_path, box)
-    slide.shapes.add_picture(str(img_path), Inches(fx), Inches(fy), width=Inches(fw), height=Inches(fh))
+    pic = slide.shapes.add_picture(str(img_path), Inches(fx), Inches(fy), width=Inches(fw), height=Inches(fh))
+    if item.get("rotation") is not None:
+        pic.rotation = float(item.get("rotation"))
     return {
         "semantic_unit_id": item.get("id"),
         "asset_path": str(img_path),
@@ -161,8 +195,8 @@ def get_items(inventory: dict[str, Any]) -> list[dict[str, Any]]:
                 item = dict(item)
                 item.setdefault("slide", idx)
                 items.append(item)
-        return items
-    return [dict(item) for item in inventory.get("items", [])]
+        return sorted(items, key=lambda item: (int(item.get("slide", 1)), float(item.get("z_index", item.get("z", 0)))))
+    return sorted([dict(item) for item in inventory.get("items", [])], key=lambda item: (int(item.get("slide", 1)), float(item.get("z_index", item.get("z", 0)))))
 
 
 def main() -> None:
@@ -198,6 +232,9 @@ def main() -> None:
             report["text_objects"] += 1
         elif cls == "layout_native":
             add_native_shape(slide, item, box)
+            report["native_layout_objects"] += 1
+        elif cls in {"line_native", "connector_native"}:
+            add_native_line(slide, item, box)
             report["native_layout_objects"] += 1
         elif cls in {"imagegen_asset", "api_generated_asset", "provided_asset"}:
             asset = manifest_by_id.get(item.get("id"))

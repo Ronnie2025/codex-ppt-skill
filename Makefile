@@ -1,7 +1,7 @@
 PYTHON ?= python3
 DEMO_DIR ?= output/demo
 
-.PHONY: help check pycheck deps-check audit pack cut compare validate build-semantic demo pack-demo cut-demo compare-demo semantic-demo clean-demo
+.PHONY: help check pycheck deps-check audit pack cut compare validate semantic-init semantic-preflight build-semantic semantic-test demo pack-demo cut-demo compare-demo semantic-demo clean-demo
 
 help:
 	@echo "Codex PPT Skill shortcuts"
@@ -16,8 +16,11 @@ help:
 	@echo "  make pack IMAGES_DIR=./slides OUT_PPTX=./output/deck.pptx PACK_ARGS=\"--contact-sheet ./output/contact-sheet.jpg --export-pdf\""
 	@echo ""
 	@echo "Semantic asset tools:"
+	@echo "  make semantic-init OUT_DIR=./work/semantic REF=./slides/page-01.png"
+	@echo "  make semantic-preflight INVENTORY=./visual_inventory.json MANIFEST=./asset_manifest.json ANCHORS=./asset_anchors.json"
 	@echo "  make build-semantic INVENTORY=./visual_inventory.json MANIFEST=./asset_manifest.json OUT_PPTX=./output/reconstructed.pptx"
 	@echo "  make cut GRID=./output/generated/icons_grid.png ROWS=3 COLS=4 NAMES=a,b,c,d OUT_DIR=./output/assets MANIFEST=./output/asset_manifest.json"
+	@echo "  make cut GRID_MANIFEST=./prompts/assets_cycle_1.json OUT_DIR=./assets MANIFEST=./asset_manifest.json"
 	@echo "  make compare REF=./output/reference/page-01.png RENDER=./output/render/page-01.png COMPARE_DIR=./output/compare"
 	@echo "  make validate PPTX=./output/reconstructed.pptx REF=./output/reference/page-01.png MANIFEST=./output/asset_manifest.json INVENTORY=./output/visual_inventory.json REPORT=./output/validation_report.md"
 	@echo ""
@@ -26,6 +29,7 @@ help:
 	@echo "  make pack-demo"
 	@echo "  make cut-demo"
 	@echo "  make compare-demo"
+	@echo "  make semantic-test"
 
 pycheck:
 	$(PYTHON) -m py_compile scripts/*.py
@@ -43,6 +47,14 @@ pack:
 	@test -n "$(OUT_PPTX)" || (echo "OUT_PPTX is required" && exit 2)
 	$(PYTHON) scripts/package_image_deck.py --images-dir "$(IMAGES_DIR)" --out-pptx "$(OUT_PPTX)" $(PACK_ARGS)
 
+semantic-init:
+	@test -n "$(OUT_DIR)" || (echo "OUT_DIR is required" && exit 2)
+	$(PYTHON) scripts/init_semantic_project.py --out-dir "$(OUT_DIR)" $(if $(REF),--reference "$(REF)",) $(if $(FORCE),--force,)
+
+semantic-preflight:
+	@test -n "$(INVENTORY)" || (echo "INVENTORY is required" && exit 2)
+	$(PYTHON) scripts/validate_semantic_inputs.py --inventory "$(INVENTORY)" $(if $(MANIFEST),--manifest "$(MANIFEST)",) $(if $(ANCHORS),--anchors "$(ANCHORS)",) $(if $(REQUIRE_ANCHORS),--require-anchors,) $(if $(STAGE),--stage "$(STAGE)",--stage build) $(if $(PREFLIGHT_REPORT),--out "$(PREFLIGHT_REPORT)",)
+
 build-semantic:
 	@test -n "$(INVENTORY)" || (echo "INVENTORY is required" && exit 2)
 	@test -n "$(MANIFEST)" || (echo "MANIFEST is required" && exit 2)
@@ -50,12 +62,16 @@ build-semantic:
 	$(PYTHON) scripts/build_semantic_deck.py --inventory "$(INVENTORY)" --manifest "$(MANIFEST)" --out-pptx "$(OUT_PPTX)" $(if $(BASE_DIR),--base-dir "$(BASE_DIR)",) $(if $(BUILD_REPORT),--report "$(BUILD_REPORT)",)
 
 cut:
-	@test -n "$(GRID)" || (echo "GRID is required" && exit 2)
-	@test -n "$(ROWS)" || (echo "ROWS is required" && exit 2)
-	@test -n "$(COLS)" || (echo "COLS is required" && exit 2)
-	@test -n "$(NAMES)" || (echo "NAMES is required" && exit 2)
 	@test -n "$(OUT_DIR)" || (echo "OUT_DIR is required" && exit 2)
-	$(PYTHON) scripts/grid_cut.py --grid "$(GRID)" --rows "$(ROWS)" --cols "$(COLS)" --names "$(NAMES)" --out-dir "$(OUT_DIR)" $(if $(MANIFEST),--manifest-out "$(MANIFEST)",)
+	@if [ -n "$(GRID_MANIFEST)" ]; then \
+		$(PYTHON) scripts/grid_cut.py --grid-manifest "$(GRID_MANIFEST)" --out-dir "$(OUT_DIR)" $(if $(MANIFEST),--manifest-out "$(MANIFEST)",); \
+	else \
+		test -n "$(GRID)" || (echo "GRID is required" && exit 2); \
+		test -n "$(ROWS)" || (echo "ROWS is required" && exit 2); \
+		test -n "$(COLS)" || (echo "COLS is required" && exit 2); \
+		test -n "$(NAMES)" || (echo "NAMES is required" && exit 2); \
+		$(PYTHON) scripts/grid_cut.py --grid "$(GRID)" --rows "$(ROWS)" --cols "$(COLS)" --names "$(NAMES)" --out-dir "$(OUT_DIR)" $(if $(MANIFEST),--manifest-out "$(MANIFEST)",); \
+	fi
 
 compare:
 	@test -n "$(REF)" || (echo "REF is required" && exit 2)
@@ -67,6 +83,9 @@ validate:
 	@test -n "$(PPTX)" || (echo "PPTX is required" && exit 2)
 	@test -n "$(REPORT)" || (echo "REPORT is required" && exit 2)
 	$(PYTHON) scripts/validate_semantic_deck.py --pptx "$(PPTX)" $(if $(REF),--reference "$(REF)",) $(if $(MANIFEST),--manifest "$(MANIFEST)",) $(if $(INVENTORY),--inventory "$(INVENTORY)",) $(if $(FULL_SLIDE_SIZE),--full-slide-size "$(FULL_SLIDE_SIZE)",) --out "$(REPORT)"
+
+semantic-test:
+	$(PYTHON) tests/test_semantic_workflow.py
 
 demo: pack-demo cut-demo compare-demo semantic-demo
 
@@ -90,6 +109,7 @@ compare-demo:
 semantic-demo:
 	rm -rf "$(DEMO_DIR)/semantic"
 	mkdir -p "$(DEMO_DIR)/semantic"
+	$(PYTHON) scripts/validate_semantic_inputs.py --inventory tests/fixtures/semantic_minimal/visual_inventory.json --manifest tests/fixtures/semantic_minimal/asset_manifest.json --stage build --out "$(DEMO_DIR)/semantic/preflight.json"
 	$(PYTHON) scripts/build_semantic_deck.py --inventory tests/fixtures/semantic_minimal/visual_inventory.json --manifest tests/fixtures/semantic_minimal/asset_manifest.json --base-dir tests/fixtures/semantic_minimal --out-pptx "$(DEMO_DIR)/semantic/reconstructed.pptx" --report "$(DEMO_DIR)/semantic/build_report.json"
 	$(PYTHON) scripts/audit_pptx_editability.py "$(DEMO_DIR)/semantic/reconstructed.pptx" --json "$(DEMO_DIR)/semantic/editability_audit.json"
 	$(PYTHON) scripts/validate_semantic_deck.py --pptx "$(DEMO_DIR)/semantic/reconstructed.pptx" --reference tests/fixtures/semantic_minimal/reference/page-01.png --manifest tests/fixtures/semantic_minimal/asset_manifest.json --inventory tests/fixtures/semantic_minimal/visual_inventory.json --full-slide-size 1920x1080 --out "$(DEMO_DIR)/semantic/validation_report.md"

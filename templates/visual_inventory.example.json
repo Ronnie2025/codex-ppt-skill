@@ -14,14 +14,25 @@
       "id": "panel_main",
       "class": "layout_native",
       "bbox_px": [80, 180, 980, 620],
-      "ppt_role": "native_shape"
+      "ppt_role": "native_shape",
+      "z_index": 0
+    },
+    {
+      "id": "connector_01",
+      "class": "line_native",
+      "bbox_px": [300, 300, 260, 0],
+      "line": "5A93EA",
+      "line_width": 2,
+      "ppt_role": "native_connector",
+      "z_index": 5
     },
     {
       "id": "domain_icon_01",
       "class": "imagegen_asset",
       "bbox_px": [140, 240, 120, 120],
       "semantic_unit_count": 1,
-      "ppt_role": "independent_image"
+      "ppt_role": "independent_image",
+      "z_index": 10
     }
   ]
 }
