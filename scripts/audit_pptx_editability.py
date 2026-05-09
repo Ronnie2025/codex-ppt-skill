@@ -25,7 +25,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def natural_slide_key(name: str) -> list[object]:
-    return [int(part) if part.isdigit() else part for part in re.split(r"(\\d+)", name)]
+    return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", name)]
 
 
 def audit_pptx(pptx_path: Path) -> dict:
@@ -33,7 +33,7 @@ def audit_pptx(pptx_path: Path) -> dict:
         names = zf.namelist()
         media = [name for name in names if name.startswith("ppt/media/")]
         slides = sorted(
-            [name for name in names if re.match(r"ppt/slides/slide\\d+\\.xml$", name)],
+            [name for name in names if re.match(r"ppt/slides/slide\d+\.xml$", name)],
             key=natural_slide_key,
         )
         slide_reports = []
