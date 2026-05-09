@@ -164,7 +164,7 @@ make compare-demo
 | `scripts/compare_render.py` | 将参考图和渲染图生成差异热区、指标和汇总预览图 |
 | `scripts/validate_semantic_deck.py` | 检查 PPTX 是否嵌入参考图、整页媒体或不合规 manifest |
 | `scripts/audit_pptx_editability.py` | 快速判断 PPTX 是否像图片页、是否混合文字与图片、是否含 SVG 媒体 |
-| `scripts/audit_public_skill.py` | 发布前扫描私有路径、密钥、token、cookie、项目残留 |
+| `scripts/audit_public_skill.py` | 发布前做公开仓库审计，检查本地或项目残留 |
 
 ## 仓库结构
 
@@ -204,20 +204,6 @@ codex-ppt-skill/
 - 复杂图标、箭头、3D 元素、UI 装饰应拆成最小语义单元，再生成透明资产。
 - 中文文字、数字、来源、Logo、二维码、合规标识优先用后处理或 PPT 原生对象处理。
 - 每次交付都保留提示词、预览、对比、验证报告和已知限制。
-
-## 公开发布边界
-
-这个仓库只保留通用流程、通用脚本、脱敏演示图和脱敏模板。不要提交：
-
-- 客户 PPT、真实项目图片、生成图、汇总预览图、QA 报告。
-- 真实 Logo、客户模板、内部图标库、报价、合同、SLA、密钥、cookie、token。
-- 真实 badcase、用户数据、内部路径、内部域名或不可公开链接。
-
-发布前运行：
-
-```bash
-make check
-```
 
 ## License
 
