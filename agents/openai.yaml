@@ -1,3 +1,3 @@
 display_name: PPT 生图与可编辑重建
 short_description: 判断材料适合图片型 PPT、元素重组，还是 SVG 拆解
-default_prompt: 使用 $imagegen-scene-ppt 判断我的材料是否需要编辑；不需要编辑就走整页生图 PPT，需要编辑时再判断适合元素重组还是 SVG 拆解。
+default_prompt: 使用 $imagegen-scene-ppt 判断我是新做 PPT 还是已有图片页；新做汇报先走整页生图 PPT，已有图片页或生成后的页图再选元素重组或 SVG 拆解。
