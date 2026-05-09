@@ -79,7 +79,11 @@ Generated grids are extraction sheets only. Cut them into one transparent asset 
 
 ## Asset Generation Rules
 
-Every `imagegen_asset` request should use the full reference plus the relevant crop or residual crop as visual context when the image tool supports references. Text-only generation is acceptable only for synthetic fixtures or generic demos, not for reference-matched production reconstruction.
+Every production image asset must be generated with Codex's `imagegen` skill. Use the full reference plus the relevant crop or residual crop as visual context when the tool supports references. Text-only generation is acceptable only for synthetic fixtures or generic demos, not for reference-matched production reconstruction.
+
+Do not use LibreOffice, PowerPoint, SVG redraws, programmatic icon drawing, generic icon libraries, or browser screenshots as substitutes for image generation. LibreOffice / PowerPoint / soffice may be used only after the deck is built to render PPTX into PDF/PNG for QA. Label that step as render QA, not image generation.
+
+`api_generated_asset` remains in the schema for compatibility, but do not choose it unless the user explicitly asks for an external image API. `provided_asset` is valid only for user-supplied or licensed assets and synthetic tests; it is not a production replacement for Codex `imagegen`.
 
 Prompt each grid like this:
 
@@ -100,6 +104,7 @@ After generation:
 - remove white/chroma background to alpha;
 - trim transparent borders;
 - reject assets with readable text, residual card frames, hard crop edges, neighboring objects, or one-axis distortion;
+- reject any grid-cut asset whose visible alpha touches the cell boundary, contains green/chroma spill, is clipped, or includes multiple semantic objects;
 - record every final asset in `asset_manifest.json`.
 
 The generated grid is never a final slide asset. It is only an extraction sheet. A production-grade v4/v5-style page should normally have:
@@ -111,6 +116,20 @@ The generated grid is never a final slide asset. It is only an extraction sheet.
 - `asset_anchors.json` records for every placement.
 
 If the manifest contains only synthetic `provided_asset` entries, the run proves the build chain but not visual replica quality.
+
+## Grid vs Standalone Assets
+
+Asset grids are a convenience, not the default for every visual. Use grids only for small, similarly sized, low-risk icons where each object is unlikely to cross cell boundaries.
+
+Use standalone Codex `imagegen` calls for:
+
+- central hero visuals and large 3D objects;
+- shields, devices, dashboards, platform bases, and decorated scenes;
+- complex arrows with shadows or gradients;
+- assets that must preserve exact silhouette or visual weight;
+- any asset that failed grid cutting because it was clipped, attached to neighbors, or left chroma spill.
+
+If a grid asset fails, do not "fix" it by resizing or hiding the problem in PPT. Regenerate that semantic unit as a standalone `imagegen_asset`, remove chroma to alpha, and update `asset_manifest.json`.
 
 For public examples, keep object names generic, for example `domain_icon_01`, `workflow_arrow_01`, `decorative_asset_01`.
 
