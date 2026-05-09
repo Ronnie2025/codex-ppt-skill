@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1320" viewBox="0 0 1920 1320" role="img" aria-labelledby="title desc">
+  <title id="title">Codex PPT Skill 三路径流程图</title>
+  <desc id="desc">展示从输入材料到目标判断，再分流为整页生图 PPT、SVG 结构重绘和语义资产重组三条路径，并列出输出物与共同 QA。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="0.55" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f2f6fb"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1457c7"/>
+      <stop offset="1" stop-color="#2f8cff"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#087c89"/>
+      <stop offset="1" stop-color="#21b7ab"/>
+    </linearGradient>
+    <linearGradient id="coral" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c73f3a"/>
+      <stop offset="1" stop-color="#ff8265"/>
+    </linearGradient>
+    <filter id="shadow" x="-12%" y="-12%" width="124%" height="132%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#16304f" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L12,7 L2,12 Z" fill="#7e91aa"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L12,7 L2,12 Z" fill="#236fdf"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L12,7 L2,12 Z" fill="#159893"/>
+    </marker>
+    <marker id="arrowCoral" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L12,7 L2,12 Z" fill="#dd5b4b"/>
+    </marker>
+    <style>
+      .mono { font: 700 18px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; fill: #6c7d91; letter-spacing: 0; }
+      .title { font: 800 58px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #10233f; letter-spacing: 0; }
+      .subtitle { font: 400 25px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #54657a; letter-spacing: 0; }
+      .section { font: 800 28px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #10233f; letter-spacing: 0; }
+      .label { font: 700 23px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #10233f; letter-spacing: 0; }
+      .body { font: 400 19px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #566579; letter-spacing: 0; }
+      .small { font: 400 16px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #657488; letter-spacing: 0; }
+      .whiteTitle { font: 800 27px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #ffffff; letter-spacing: 0; }
+      .whiteBody { font: 400 17px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #eaf3ff; letter-spacing: 0; }
+      .stepNum { font: 800 19px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #ffffff; letter-spacing: 0; }
+      .stepText { font: 500 18px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #1d314a; letter-spacing: 0; }
+      .note { font: 500 16px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif; fill: #526175; letter-spacing: 0; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1320" fill="url(#bg)"/>
+  <circle cx="1630" cy="150" r="96" fill="#eaf4ff"/>
+  <circle cx="1720" cy="1130" r="140" fill="#eef8f7"/>
+  <circle cx="170" cy="1090" r="110" fill="#fff3ee"/>
+
+  <text x="90" y="96" class="mono">CODEX PPT SKILL</text>
+  <text x="90" y="166" class="title">PPT 生成与图片页重建的三条路径</text>
+  <text x="90" y="214" class="subtitle">先判断用户到底要什么交付，再进入对应流程；每条路径都写清楚边界、输出物和 QA 证据。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="90" y="282" width="360" height="154" rx="24" fill="#17253b"/>
+    <text x="126" y="334" class="whiteTitle">输入材料</text>
+    <text x="126" y="374" class="whiteBody">文档 / 旧 PPT / 截图 / 图片页</text>
+    <text x="126" y="406" class="whiteBody">业务目标 / 汇报对象 / 交付格式</text>
+  </g>
+
+  <path d="M450 359 H548" stroke="#7e91aa" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="560" y="260" width="800" height="198" rx="28" fill="#ffffff" stroke="#d8e5f2" stroke-width="2"/>
+    <text x="606" y="318" class="section">目标判断：先定交付承诺</text>
+    <text x="606" y="364" class="body">1. 只要视觉展示、PPTX 或 PDF？</text>
+    <text x="606" y="398" class="body">2. 只要把页面结构拆成 SVG，用于文档或网页复用？</text>
+    <text x="606" y="432" class="body">3. 要 PowerPoint 内对象级编辑，并保留图标、箭头、3D 装饰？</text>
+  </g>
+
+  <path d="M1360 359 H1468" stroke="#7e91aa" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="1482" y="282" width="348" height="154" rx="24" fill="#ffffff" stroke="#d8e5f2" stroke-width="2"/>
+    <text x="1518" y="334" class="label">共同前置规则</text>
+    <text x="1518" y="374" class="body">不把图片交付说成可编辑</text>
+    <text x="1518" y="406" class="body">不把 SVG 嵌入说成 PPT 反编译</text>
+  </g>
+
+  <path d="M820 458 C690 510 430 510 322 560" stroke="#236fdf" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <path d="M960 458 C960 508 960 520 960 560" stroke="#159893" stroke-width="4" fill="none" marker-end="url(#arrowTeal)"/>
+  <path d="M1100 458 C1240 510 1490 510 1598 560" stroke="#dd5b4b" stroke-width="4" fill="none" marker-end="url(#arrowCoral)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="90" y="570" width="520" height="424" rx="30" fill="#ffffff" stroke="#d9e8f4" stroke-width="2"/>
+    <rect x="90" y="570" width="520" height="86" rx="30" fill="url(#blue)"/>
+    <text x="128" y="624" class="whiteTitle">路径 A：整页生图 PPT</text>
+    <text x="128" y="691" class="body">适合：优先汇报观感，只需要 PPTX / PDF / PNG。</text>
+
+    <circle cx="134" cy="744" r="18" fill="#236fdf"/><text x="134" y="751" text-anchor="middle" class="stepNum">1</text>
+    <text x="170" y="751" class="stepText">页纲与逐页生图提示词</text>
+    <circle cx="134" cy="795" r="18" fill="#236fdf"/><text x="134" y="802" text-anchor="middle" class="stepNum">2</text>
+    <text x="170" y="802" class="stepText">生成 16:9 整页图片</text>
+    <circle cx="134" cy="846" r="18" fill="#236fdf"/><text x="134" y="853" text-anchor="middle" class="stepNum">3</text>
+    <text x="170" y="853" class="stepText">后处理叠加真实 Logo / 二维码</text>
+    <circle cx="134" cy="897" r="18" fill="#236fdf"/><text x="134" y="904" text-anchor="middle" class="stepNum">4</text>
+    <text x="170" y="904" class="stepText">封装 PPTX，导出 PDF 和汇总预览图</text>
+
+    <rect x="128" y="930" width="444" height="40" rx="20" fill="#eef5ff"/>
+    <text x="150" y="956" class="note">边界：正文和图表在图片里，不承诺全元素可编辑。</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="700" y="570" width="520" height="424" rx="30" fill="#ffffff" stroke="#d9e8f4" stroke-width="2"/>
+    <rect x="700" y="570" width="520" height="86" rx="30" fill="url(#teal)"/>
+    <text x="738" y="624" class="whiteTitle">路径 B：SVG 结构重绘</text>
+    <text x="738" y="691" class="body">适合：要 SVG、网页/文档复用，或先做轻量矢量样板。</text>
+
+    <circle cx="744" cy="744" r="18" fill="#159893"/><text x="744" y="751" text-anchor="middle" class="stepNum">1</text>
+    <text x="780" y="751" class="stepText">识别文本、容器、线条、箭头、图标</text>
+    <circle cx="744" cy="795" r="18" fill="#159893"/><text x="744" y="802" text-anchor="middle" class="stepNum">2</text>
+    <text x="780" y="802" class="stepText">用原生 SVG 重建页面层级</text>
+    <circle cx="744" cy="846" r="18" fill="#159893"/><text x="744" y="853" text-anchor="middle" class="stepNum">3</text>
+    <text x="780" y="853" class="stepText">输出 SVG 和 PNG 预览</text>
+    <circle cx="744" cy="897" r="18" fill="#159893"/><text x="744" y="904" text-anchor="middle" class="stepNum">4</text>
+    <text x="780" y="904" class="stepText">如需 PPTX，再判断是否进入路径 C</text>
+
+    <rect x="738" y="930" width="444" height="40" rx="20" fill="#eefaf8"/>
+    <text x="760" y="956" class="note">边界：SVG 嵌入 PPT 不等于对象级可编辑。</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1310" y="570" width="520" height="424" rx="30" fill="#ffffff" stroke="#d9e8f4" stroke-width="2"/>
+    <rect x="1310" y="570" width="520" height="86" rx="30" fill="url(#coral)"/>
+    <text x="1348" y="624" class="whiteTitle">路径 C：语义资产重组</text>
+    <text x="1348" y="691" class="body">适合：要可编辑 PPTX，并保留关键视觉元素。</text>
+
+    <circle cx="1354" cy="744" r="18" fill="#dd5b4b"/><text x="1354" y="751" text-anchor="middle" class="stepNum">1</text>
+    <text x="1390" y="751" class="stepText">建立 visual_inventory 和 asset_anchors</text>
+    <circle cx="1354" cy="795" r="18" fill="#dd5b4b"/><text x="1354" y="802" text-anchor="middle" class="stepNum">2</text>
+    <text x="1390" y="802" class="stepText">生成无文字 isolated asset grid</text>
+    <circle cx="1354" cy="846" r="18" fill="#dd5b4b"/><text x="1354" y="853" text-anchor="middle" class="stepNum">3</text>
+    <text x="1390" y="853" class="stepText">切成一个语义单元一个透明 PNG</text>
+    <circle cx="1354" cy="897" r="18" fill="#dd5b4b"/><text x="1354" y="904" text-anchor="middle" class="stepNum">4</text>
+    <text x="1390" y="904" class="stepText">原生文字/形状 + 透明资产组装 PPTX</text>
+
+    <rect x="1348" y="930" width="444" height="40" rx="20" fill="#fff1ee"/>
+    <text x="1370" y="956" class="note">边界：不使用整页原图或硬裁片做最终素材。</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="120" y="1068" width="1680" height="152" rx="32" fill="#17253b"/>
+    <text x="162" y="1124" class="whiteTitle">共同 QA 与发布检查</text>
+    <text x="162" y="1170" class="whiteBody">整页图路径：16:9 裁切、Logo 后叠、PDF/汇总预览图复核。</text>
+    <text x="725" y="1170" class="whiteBody">SVG 路径：SVG/PNG 预览，说明简化对象与 PPT 边界。</text>
+    <text x="1250" y="1170" class="whiteBody">重建路径：diff heatmap、manifest、validation report。</text>
+    <text x="162" y="1206" class="whiteBody">发布前统一跑公开审计：不带私有路径、密钥、客户残留或本地验证产物。</text>
+  </g>
+</svg>

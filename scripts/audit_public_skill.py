@@ -36,6 +36,21 @@ TEXT_SUFFIXES = {
     ".svg",
 }
 
+SKIP_DIR_NAMES = {
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "env",
+    "node_modules",
+    "output",
+    "venv",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -46,7 +61,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def should_scan(path: Path) -> bool:
-    if ".git" in path.parts:
+    if any(part in SKIP_DIR_NAMES for part in path.parts):
         return False
     if path.name in {".DS_Store"}:
         return False
