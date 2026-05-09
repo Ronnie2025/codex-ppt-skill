@@ -1,160 +1,112 @@
 ---
 name: imagegen-scene-ppt
-description: "用于中文 ToB 商业汇报的 PPT 视觉生成与图片页重建工作流：支持整页生图 PPT、按语义资产拆解并重建为可编辑 PPTX，以及图片页 SVG 结构重绘。"
+description: "面向中文 toB 商业汇报的 PPT 工作流路由：先判断是生成图片型 PPT，还是把图片页拆解为可编辑 PPTX / SVG，再按对应流程执行。"
 ---
 
 # Codex PPT Skill
 
-这个 skill 有三条路径：
+本文件是给 Codex 执行用的路由和操作规程。面向用户的项目说明、效果图和安装命令见 `README.md`。
 
-1. **整页生图 PPT**：适合单点沟通、重视觉、接受图片化交付的演示材料。
-2. **语义可编辑重组**：适合用户给出图片页、截图页或图片型 PPT，并要求将其拆成可编辑 PPTX。
-3. **SVG 结构重绘**：适合用户只要求把图片页拆成可编辑 SVG，或要先做轻量矢量结构样板。
+先判断用户真正要交付什么：
 
-先判断用户真实目标，再选择路径。不要把图片型 PPT 说成可编辑 PPT；不要把 SVG 导入 PowerPoint 的媒体对象说成完整可编辑 PPT；也不要把整页截图当成可编辑重建的最终交付。
+1. **只要展示型 PPT / PDF / PNG**：走整页生图 PPT。
+2. **需要后续在 PowerPoint 里改字、移元素、换图标**：走元素重组。
+3. **只要 SVG、网页/文档复用，或低成本看结构**：走 SVG 拆解。
 
-三条路径不是互斥关系。可以先走 **整页生图 PPT** 形成视觉方向和可汇报版本，再把生成的单页 PNG 交给 **语义可编辑重组** 或 **SVG 结构重绘**。这种串联适合用户先要效果，再追加结构化或可编辑诉求。默认优先考虑语义可编辑重组，只有用户明确只要 SVG、网页/文档复用，或要低成本结构样板时，再选 SVG。
+路径可以串联：先用整页生图 PPT 形成视觉页，再把单页 PNG 交给元素重组或 SVG 拆解继续处理。只要目标是可编辑 PPTX，默认优先元素重组；SVG 拆解不是默认的 PPT 可编辑路线。
 
-## 模式选择
+## 路由判断
 
-使用 **整页生图 PPT**，当用户重视整体观感、现场讲解效果、缩略图节奏，并接受正文和图表是图片。
+先问或确认这四件事：
 
-使用 **语义可编辑重组**，当用户提出这些目标：
+- 最终交付：PPTX / PDF / PNG / SVG / 可编辑 PPTX。
+- 是否需要后续编辑：不编辑、少量替换、还是对象级编辑。
+- 输入材料：文档、旧 PPT、截图、图片页、整页生图页、参考模板。
+- 质量优先级：视觉观感、可编辑性、速度、token 成本、结构复用。
 
-- 图片版 PPT 转可编辑 PPT；
-- 截图页/整页生图拆成可编辑对象；
-- 需要锤炼图片转 PPT 的 skill；
-- 要保留美化元素，但不能用硬裁 crop；
-- 要让图标、箭头、装饰、3D 元素可单独选中、移动、替换。
+直接选择：
 
-使用 **SVG 结构重绘**，当用户明确要 SVG、网页/文档可复用矢量图，或只需要把页面结构拆成可编辑 SVG。SVG 路线不是默认 PPTX 可编辑重建路线。
+- 用户只要汇报观感、PDF 或图片预览：选择 **整页生图 PPT**。
+- 用户明确要可编辑 PPTX：选择 **元素重组**。
+- 用户明确要 SVG 或网页/文档复用：选择 **SVG 拆解**。
+- 用户既想先看效果又可能后续编辑：先生成图片型 PPT，再把确认后的页图作为拆解输入。
 
-### B/C 路径取舍
+不适配时直接说明原因，并建议改用原生可编辑 PPT、数据报表、文档或设计工具流程。
 
-| 维度 | 语义可编辑重组 | SVG 结构重绘 |
-|---|---|---|
-| 输入 | 原图、截图、图片页、A 生成的单页 PNG | 原图、截图、图片页、A 生成的单页 PNG |
-| 时间 | 较长，需要资产化、组装和验证 | 较短，适合快速试探结构 |
-| token | 高，需要 inventory、资产提示词、布局和 QA | 中低，主要用于理解页面和生成 SVG |
-| 效果 | 更能保留图标、箭头、3D 装饰和视觉层次 | 结构清楚，但复杂视觉容易简化 |
-| PowerPoint 可编辑性 | 更高，文字、容器和语义资产可分别编辑 | 不稳定，通常只能作为 SVG/媒体嵌入 |
+## 路径 A：整页生图 PPT
 
-不适配这三条路径时，直接说明原因，并建议使用文档、数据报表、原生可编辑 PPT 或设计工具流程。
+适合单点沟通、重视觉、接受图片化交付的材料，例如方案汇报、售前交流、内部同步、培训讲解、复盘展示。
 
-## 模式一：整页生图 PPT
+执行步骤：
 
-### 适配条件
+1. 澄清使用场景、受众、页数、详略、风格、模板、Logo、输出格式和禁止内容。
+2. 读取用户材料，生成逐页大纲：标题、页面目标、2-4 条核心信息。
+3. 按 [references/prompt-patterns.md](references/prompt-patterns.md) 写逐页详细生图提示词。
+4. 调用 imagegen 生成 16:9 整页图。中文少而大，避免密集表格和小字号脚注。
+5. 真实 Logo、二维码、印章、品牌标识只做后处理叠加，不交给 imagegen 生成。
+6. 用 `scripts/package_image_deck.py` 或 `make pack` 封装 PPTX，可选导出 PDF、每页 PNG 和 contact sheet。
+7. 检查页数、尺寸、文字可读性、Logo 位置、伪 Logo、敏感信息和明显错字。
 
-- 材料围绕一个明确沟通目标展开，不是多主题资料合集。
-- 用户重视整体观感、统一风格、缩略图效果和现场讲解体验。
-- 用户接受正文和图表以图片形式存在，不要求所有元素可编辑。
-- 材料用于正式汇报、售前交流、内部同步、方案介绍、培训讲解、复盘展示等场景。
-- 用户希望保留逐页提示词，便于重抽、迁移和复用。
+默认交付：
 
-### 标准流程
+- 图片型 PPTX
+- PDF 或每页 PNG，按用户要求
+- contact sheet
+- 逐页提示词和 QA 记录
 
-1. 判断是否适合图片型 PPT。
-2. 澄清使用场景、沟通目标、受众、页数、详略、风格、模板、Logo、输出格式和禁止内容。
-3. 读取用户材料，整理逐页大纲：标题、页面目标、2-4 条核心信息。
-4. 按 [references/prompt-patterns.md](references/prompt-patterns.md) 写逐页详细提示词。
-5. 调用 imagegen 生成 16:9 整页图。不要让 imagegen 生成真实 Logo、二维码、印章或品牌标识。
-6. 裁切/缩放到统一 16:9，遮盖 Logo 占位区，叠加真实 Logo。
-7. 使用 `scripts/package_image_deck.py` 封装为 PPTX，可选导出 PDF 和每页 PNG。
-8. 生成汇总预览图（contact sheet）和 QA 记录。
+边界：图片型 PPT 不等于可编辑 PPT。正文、图表和版式在图片里，不能承诺 PowerPoint 内逐字逐对象编辑。
 
-### 默认交付物
+## 路径 B：元素重组
 
-- 图片型 `.pptx`
-- 逐页详细提示词
-- 汇总预览图（contact sheet）
-- QA 检查记录
+适合用户已经有图片页、截图页、图片型 PPT，或路径 A 生成的页图，并且希望重建为实用级可编辑 PPTX。
 
-可选交付 PDF、每页 PNG、来源与证据清单。
+核心判断：
 
-## 模式二：语义可编辑重组
+- 文本、标题、卡片、容器、分隔线、普通结构箭头：优先做 PPT 原生对象。
+- 图标、徽章、3D 装饰、复杂箭头、插画、设备图、UI 装饰：做独立透明资产。
+- 原图、截图、硬裁 crop 只能作为参考和中间素材，不能作为最终整页背景或带残边的最终对象。
 
-这个模式从参考图重建 PPT，但最终 PPT 不能插入整页原图，也不能用带硬边、残字、残框的原始 crop 作为最终素材。
+执行步骤：
 
-### 核心规则
+1. 建立项目目录，保存参考图为 `reference_page_*.png`。
+2. 建立 `visual_inventory.json`，按文本、容器、图标、箭头、装饰、3D 元素等对象做页面清单。
+3. 建立 `asset_anchors.json`，记录每个待生成资产的 bbox、含义、目标尺寸和层级。
+4. 为资产写 imagegen/API 提示词，生成 isolated asset grid。要求无文字、无数字、无标签、无卡片框、无背景碎片。
+5. 用 `scripts/grid_cut.py` 或 `make cut` 切成一个元素一个透明 PNG，并生成 `asset_manifest.json`。
+6. 用 PPT 原生对象重建文本、卡片、容器和结构；用透明资产插入图标、箭头和装饰元素。
+7. 渲染 PPTX，再用 `scripts/compare_render.py` 或 `make compare` 输出 contact sheet / diff heatmap。
+8. 用 `scripts/validate_semantic_deck.py` 或 `make validate` 检查没有整页原图、参考图 hash 和不合规媒体。
 
-- 原图只作为参考和定位来源，不进入最终 PPT。
-- 每个非文字视觉元素先拆成最小语义单元，再生成或清理为独立透明资产。
-- 一个图标、一个装饰件、一个风险徽章、一个 3D 物体、一个流程符号、一个箭头，就是一个独立资产和一个 PPT 图片对象。
-- 文本全部用可编辑文本框；卡片、容器、底板、分隔线、普通结构形状用 PPT 原生对象。
-- 图片资产只允许等比例 contain，不允许横纵拉伸。
-- 不能把多个语义视觉合并成一张最终图片，除非它是明确批准的无文字场景背景。
-
-### 工作流
-
-1. 建立输出目录，保存 `reference_page_*.png` 作为参考。
-2. 建立 `visual_inventory.json`：列出文字、容器、图标、箭头、装饰、3D 元素和风险标记。
-3. 建立 `asset_anchors.json`：为每个待生成资产记录 bbox、语义、目标尺寸、层级。
-4. 为资产写 imagegen/API 提示词。提示词要求 isolated asset grid、无文字、无数字、无卡片框、无背景、可透明化。
-5. 使用 `scripts/grid_cut.py` 切分资产网格，去背景、alpha trim，并生成 `asset_manifest.json`。
-6. 用 PPT 原生对象重建文字、卡片、容器和结构；用透明资产插入语义视觉。
-7. 渲染 PPTX 为 PNG/PDF，使用 `scripts/compare_render.py` 生成汇总预览图和差异热力图（diff heatmap）。
-8. 使用 `scripts/validate_semantic_deck.py` 检查没有整页原图、没有参考图 hash、没有原图硬裁片媒体，并输出验证报告。
-
-详细执行规则见 [references/semantic-replica-workflow.md](references/semantic-replica-workflow.md)。
-局限性和验收口径见 [references/limitations.md](references/limitations.md)。
-
-### 必要工作文件
-
-```text
-reference_page_*.png
-visual_inventory.json
-asset_anchors.json
-prompts/assets_cycle_*.jsonl
-generated/
-assets/
-asset_manifest.json
-layout_rules.json
-build_deck.*
-render/
-compare/
-validation_report.md
-```
-
-### 验收标准
+验收标准：
 
 - PPTX 可以打开并正常渲染。
-- 最终 PPTX 不包含整页参考图作为媒体。
-- 参考图 hash 没有出现在 PPTX 媒体中。
-- 每个语义资产都有 `semantic_unit_id`、`source_type`、`asset_path`、`semantic_unit_count: 1`。
-- 文字可选中、可编辑，且不是隐藏透明文本冒充可编辑。
-- 重要图标、箭头、3D 元素、角落装饰没有矩形硬边、残字、截断或邻近卡片碎片。
-- 输出汇总预览图、差异热力图、对象计数和验证报告。
-- 字号、换行和图标位置以目标用户实际 PowerPoint 打开结果为最终准线。
+- 文本可选中、可编辑，不用隐藏透明文本冒充可编辑。
+- 重要图标、箭头、装饰元素可单独选中、移动、替换。
+- 没有整页参考图作为最终媒体。
+- 没有带残字、残框、硬边的原图裁片。
+- 输出 manifest、渲染预览、对比图和验证报告。
 
-## 模式三：SVG 结构重绘
+详细执行规则见 [references/semantic-replica-workflow.md](references/semantic-replica-workflow.md)；局限性见 [references/limitations.md](references/limitations.md)。
 
-这个模式从参考图重新搭建 SVG 结构，适合用户只要 SVG，或要验证页面能否拆成矢量结构。它不是 PowerPoint 对象级重建的充分条件。
+## 路径 C：SVG 拆解
 
-### 适配条件
+适合用户明确要 `.svg`，或要把图片页转换成网页/文档可复用的轻量结构。它可以接收原图、截图、图片页，也可以接收路径 A 生成的单页 PNG。
 
-- 用户明确要求输出 `.svg`。
-- 页面主要由文本、容器、线条、简单图标、流程箭头和信息图结构组成。
-- 用户接受 SVG 与原图存在样式差异，并以可编辑结构和清晰预览为优先。
+执行步骤：
 
-### 工作流
+1. 读取参考图，识别文本、容器、背景、线条、箭头、简单图标和装饰层。
+2. 用原生 SVG 重建页面结构，文本、色块、线条和图形尽量成为独立 SVG 对象。
+3. 输出 `.svg` 和 PNG 预览。
+4. 简短说明哪些对象是 SVG 原生对象，哪些复杂视觉被简化，是否适合继续进入元素重组。
 
-1. 读取参考图，拆分文本、容器、背景、图标、箭头、装饰层。
-2. 用原生 SVG 重建页面层级，文本、色块、线条和图形都要成为独立 SVG 对象。
-3. 输出 SVG 和 PNG 预览，检查文字、层级、比例和主要视觉元素。
-4. 如果用户要 PPTX，只能作为可选嵌入或继续进入语义可编辑重组模式。不要承诺 SVG 导入 PowerPoint 后所有内部路径都稳定可编辑。
+边界：SVG 适合结构复用，但导入 PowerPoint 后不保证内部对象稳定可编辑。用户要对象级 PPTX 编辑时，转回路径 B。
 
-### 交付物
+## 输出纪律
 
-- `.svg`
-- PNG 预览
-- 简短说明：哪些对象是 SVG 原生对象，哪些元素做了简化，是否适合继续转 PPTX
-
-## 安全与脱敏
-
-- 公开仓库和可复用 skill 不能包含客户材料、内部项目路径、真实样例、真实 Logo、报价、合同、密钥、cookie、token 或未脱敏坏例。
-- 示例必须是脱敏演示图或抽象占位，不要从真实客户项目复制图片、PPT、生成资产、提示词或报告。
-- 公开发布边界见 [references/publication-boundaries.md](references/publication-boundaries.md)。
-- 发布前运行敏感扫描：
+- 先确定路径，再开始生成或拆解。
+- 每次交付都说明最终文件、可编辑范围、已知限制和 QA 结果。
+- 能运行脚本时优先运行脚本并保留输出；不能运行时说明环境缺口。
+- 公开复用或发布仓库前，按 [references/publication-boundaries.md](references/publication-boundaries.md) 检查边界，并运行：
 
 ```bash
 python scripts/audit_public_skill.py --root .
@@ -163,7 +115,7 @@ python scripts/audit_public_skill.py --root .
 ## 硬性规则
 
 - 不编造数字、来源、标准、客户名或证据。
-- 真实 Logo 一律后处理叠加，不交给 imagegen。
-- 图片型 PPT 和可编辑 PPT 要明确区分。
-- 语义可编辑重组模式下，原图 crop 只能是中间参考，不是最终资产。
-- 每次交付都保留提示词、渲染预览、QA 记录和已知限制。
+- 不把图片型 PPT 说成可编辑 PPT。
+- 不把 SVG 嵌入说成 PowerPoint 对象级可编辑。
+- 不让 imagegen 生成真实 Logo、二维码、证书、印章或品牌标识。
+- 元素重组模式下，原图 crop 只能是中间参考，不是最终资产。

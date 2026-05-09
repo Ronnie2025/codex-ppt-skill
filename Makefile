@@ -1,7 +1,7 @@
 PYTHON ?= python3
 DEMO_DIR ?= output/demo
 
-.PHONY: help check pycheck audit pack cut compare validate demo pack-demo cut-demo compare-demo clean-demo
+.PHONY: help check pycheck deps-check audit pack cut compare validate demo pack-demo cut-demo compare-demo clean-demo
 
 help:
 	@echo "Codex PPT Skill shortcuts"
@@ -9,6 +9,7 @@ help:
 	@echo "Quality:"
 	@echo "  make check"
 	@echo "  make pycheck"
+	@echo "  make deps-check"
 	@echo "  make audit"
 	@echo ""
 	@echo "Image deck packaging:"
@@ -28,10 +29,13 @@ help:
 pycheck:
 	$(PYTHON) -m py_compile scripts/*.py
 
+deps-check:
+	$(PYTHON) -c "import PIL, pptx; print('Runtime dependencies available.')"
+
 audit:
 	$(PYTHON) scripts/audit_public_skill.py --root .
 
-check: pycheck audit
+check: pycheck deps-check audit
 
 pack:
 	@test -n "$(IMAGES_DIR)" || (echo "IMAGES_DIR is required" && exit 2)
