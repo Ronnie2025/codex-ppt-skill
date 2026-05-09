@@ -1,0 +1,40 @@
+{
+  "slide_size_px": [1920, 1080],
+  "final_deck_type": "semantic_editable_replica",
+  "source_image_policy": "reference only; do not embed the full source image in the final PPTX",
+  "font_face": "Arial Unicode MS",
+  "items": [
+    {
+      "id": "background_panel",
+      "class": "layout_native",
+      "shape": "round_rect",
+      "bbox_px": [110, 180, 1700, 720],
+      "fill": "F7FAFF",
+      "line": "C7DAF6",
+      "line_width": 1.2
+    },
+    {
+      "id": "title_main",
+      "class": "text",
+      "text": "Synthetic Semantic Rebuild",
+      "bbox_px": [150, 80, 1050, 80],
+      "font_size": 28,
+      "bold": true,
+      "color": "024094"
+    },
+    {
+      "id": "body_copy",
+      "class": "text",
+      "text": "Native text and layout plus one independent transparent asset.",
+      "bbox_px": [150, 650, 1280, 80],
+      "font_size": 18,
+      "color": "263F68"
+    },
+    {
+      "id": "domain_icon_01",
+      "class": "imagegen_asset",
+      "bbox_px": [220, 270, 260, 260],
+      "semantic_unit_count": 1
+    }
+  ]
+}

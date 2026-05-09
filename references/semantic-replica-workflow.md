@@ -1,34 +1,57 @@
 # Semantic Editable Replica Workflow
 
-Use this reference when the user wants an image-only slide, screenshot, or rendered page rebuilt as a practical editable PPTX.
+Use this reference when an image-only slide, screenshot, rendered PPT page, or generated page must become a practical editable PPTX.
+
+## Required Flow
+
+Element rebuild is a reference-driven asset workflow:
+
+```text
+reference
+-> visual_inventory
+-> asset_anchors
+-> reference crops / residual redboxes
+-> imagegen or API asset grid
+-> grid_cut and alpha cleanup
+-> asset_manifest
+-> build_semantic_deck
+-> render compare
+-> validation
+```
+
+If this flow is skipped, the result is only an editable draft or structure preview. Do not call it a completed element rebuild.
 
 ## Object Classes
 
 Classify every visible element before building:
 
 - `text`: editable PPT text boxes.
-- `layout_native`: page background, panels, cards, dividers, frames, ordinary connectors, tables, and simple containers.
-- `imagegen_asset`: semantic non-text visuals such as icons, pictograms, 3D objects, chart symbols, badges, decorative UI renders, screenshots, devices, network diagrams, and stylized arrows.
-- `provided_asset`: user-supplied transparent assets with documented source.
+- `layout_native`: page background, panels, cards, dividers, frames, tables, simple containers, and ordinary straight connectors.
+- `imagegen_asset`: semantic non-text visuals such as icons, pictograms, 3D objects, chart symbols, badges, decorative UI renders, screenshots, devices, network diagrams, illustrations, and stylized arrows.
+- `provided_asset`: user-supplied or approved transparent assets with documented source.
 - `unresolved`: anything that still needs a decision.
 
-If a visual carries meaning beyond being a simple border, divider, or text container, classify it as `imagegen_asset`.
+If a visual carries meaning beyond being a border, divider, plain container, or text box, classify it as `imagegen_asset`. Complex arrows with gradients, curves, shadows, dashed returns, 3D depth, or brand-like styling are semantic assets, not native PPT arrows.
 
 ## Minimum Semantic Unit
 
 The final PPT should expose the smallest useful selectable unit:
 
 - one icon = one asset;
-- one arrow = one asset when it has distinctive style or when the user asks for generated arrows;
-- one risk badge = one asset;
-- one decorative corner render = one asset;
-- one 3D object = one asset;
+- one badge or risk marker = one asset;
+- one decorative UI render = one asset;
+- one 3D object or illustration = one asset;
+- one stylized arrow = one asset;
 - one text block = one text box;
-- one card or panel = one native shape.
+- one card, panel, table frame, divider, or simple connector = one native PPT object.
 
-Generated grids are extraction sheets only. Cut them into one asset file per semantic unit before inserting them into PPT.
+Generated grids are extraction sheets only. Cut them into one transparent asset file per semantic unit before inserting anything into PPT.
 
-## Prompt Pattern For Asset Grids
+## Asset Generation Rules
+
+Every `imagegen_asset` request should use the full reference plus the relevant crop or residual crop as visual context when the image tool supports references. Text-only generation is acceptable only for synthetic fixtures or generic demos, not for reference-matched production reconstruction.
+
+Prompt each grid like this:
 
 ```text
 Create an isolated asset grid for a PowerPoint visual replica.
@@ -41,6 +64,14 @@ Text: no readable text, no numbers, no labels, no watermark.
 Do not include card frames, slide fragments, fake logos, QR codes, crop borders, or surrounding context.
 ```
 
+After generation:
+
+- cut with declared grid geometry;
+- remove white/chroma background to alpha;
+- trim transparent borders;
+- reject assets with readable text, residual card frames, hard crop edges, neighboring objects, or one-axis distortion;
+- record every final asset in `asset_manifest.json`.
+
 For public examples, keep object names generic, for example `domain_icon_01`, `workflow_arrow_01`, `decorative_asset_01`.
 
 ## Required Manifests
@@ -51,7 +82,7 @@ For public examples, keep object names generic, for example `domain_icon_01`, `w
 {
   "slide_size_px": [1920, 1080],
   "final_deck_type": "semantic_editable_replica",
-  "source_image_policy": "reference only",
+  "source_image_policy": "reference only; do not embed the full source image in the final PPTX",
   "items": [
     {
       "id": "title_main",
@@ -78,21 +109,27 @@ For public examples, keep object names generic, for example `domain_icon_01`, `w
     "source_type": "imagegen_asset",
     "asset_path": "assets/domain_icon_01.png",
     "semantic_unit_count": 1,
-    "grid_source": "generated/domain_icons_grid.png",
-    "grid_cell": [0, 0]
+    "generated_grid": "generated/domain_icons_grid.png",
+    "grid_cell": [0, 0],
+    "placement_rule": "uniform contain scaling; no one-axis stretch"
   }
 ]
 ```
 
+Acceptable source types are `imagegen_asset`, `api_generated_asset`, and documented `provided_asset`. `raw_crop`, `reference_crop`, `screenshot_crop`, `placeholder`, and `prompt_only_asset` are not acceptable final sources.
+
 ## Build Rules
 
 - Use native PPT text for all readable text.
-- Keep line counts deliberate. Do not let PowerPoint create accidental one-character wraps.
-- Use native shapes for cards, panels, frames, shadows when they are simple enough.
+- Keep line counts deliberate; do not let PowerPoint create accidental one-character wraps.
+- Use native shapes for cards, panels, frames, shadows, tables, dividers, and simple connectors.
 - Insert semantic visuals as independent PNG assets.
 - Fit images with uniform contain scaling.
 - Never stretch images on one axis.
-- Never insert the full reference image in the final deck unless the user explicitly asks for a non-editable fallback.
+- Use `scripts/build_semantic_deck.py` for manifest-driven PPTX construction when the inventory fits the public schema.
+- Never insert SVG media in a path B final PPTX.
+- Never insert the full reference image or near-full-slide reference media in the final deck.
+- Do not use generic hand-drawn icons or low-fidelity native shapes as replacements for semantic visuals.
 
 ## QA Rules
 
@@ -100,20 +137,23 @@ Validate before handoff:
 
 - PPTX opens and renders.
 - Slide count matches the reference.
-- No full-slide reference bitmap is embedded.
+- No full-slide or near-full-slide reference bitmap is embedded.
 - Reference image hashes do not appear in PPTX media.
+- No SVG media exists in the final path B PPTX.
 - Every semantic image object has a manifest record.
-- Render previews and contact sheet exist.
-- Diff heatmaps exist when reference render is available.
+- Every `imagegen_asset` or `provided_asset` in inventory has a real asset file.
+- Picture objects in PPTX are at least enough to cover manifest placements.
+- Text items have visible native PPT text boxes; hidden transparent text over a screenshot is not a completed element rebuild.
+- Render previews, contact sheet, and diff heatmaps exist when reference render is available.
 - Report lists unresolved regions, retained bitmap exceptions, and known limits.
-- Open the PPTX in the target PowerPoint environment when possible. LibreOffice render is useful for fast iteration, but it is not the final source of truth for Chinese font metrics.
 
-Use `scripts/validate_semantic_deck.py` and `scripts/compare_render.py` when possible.
+Use `scripts/build_semantic_deck.py`, `scripts/validate_semantic_deck.py`, `scripts/compare_render.py`, and `scripts/audit_pptx_editability.py` together. Any failed gate means the result is not a certified element rebuild.
 
 ## Practical Limits
 
 - Use native PPT shapes for text, cards, tables, lines, connectors, and simple arrows.
-- Use independent transparent assets for complex icons, pictograms, illustrations, and 3D visuals.
+- Use independent transparent assets for complex icons, pictograms, illustrations, 3D visuals, UI renders, and stylized arrows.
 - Do not promise that SVG imports will remain internally editable in PowerPoint.
 - Avoid decomposing one complex icon into many ungrouped shapes unless the user explicitly needs that tradeoff and accepts fragility.
 - Keep 10%-15% extra room inside text boxes to absorb PowerPoint font and line-height differences.
+- Open the PPTX in the target PowerPoint environment when possible. LibreOffice render is useful for fast iteration, but it is not the final source of truth for Chinese font metrics.
