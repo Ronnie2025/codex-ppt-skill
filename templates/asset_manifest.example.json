@@ -1,0 +1,20 @@
+[
+  {
+    "semantic_unit_id": "domain_icon_01",
+    "source_type": "imagegen_asset",
+    "asset_path": "assets/domain_icon_01.png",
+    "semantic_unit_count": 1,
+    "generated_grid": "generated/domain_icons_grid.png",
+    "grid_cell": [0, 0],
+    "placement_rule": "uniform contain scaling; no one-axis stretch"
+  },
+  {
+    "semantic_unit_id": "workflow_arrow_01",
+    "source_type": "imagegen_asset",
+    "asset_path": "assets/workflow_arrow_01.png",
+    "semantic_unit_count": 1,
+    "generated_grid": "generated/workflow_arrows_grid.png",
+    "grid_cell": [0, 1],
+    "placement_rule": "uniform contain scaling; no one-axis stretch"
+  }
+]

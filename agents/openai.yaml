@@ -1,3 +1,3 @@
-display_name: 单点场景生图 PPT
-short_description: 生成高视觉图片型PPT
-default_prompt: 帮我为一个单点沟通场景制作高视觉图片型 PPT，请先判断是否适合生图流程，并澄清受众、风格、页数、Logo 和输出格式。
+display_name: 生图与可编辑重组 PPT
+short_description: 生成图片型PPT或重组为可编辑PPT
+default_prompt: 使用 $imagegen-scene-ppt 帮我判断适合整页生图 PPT 还是图片页可编辑重组，并给出对应流程。

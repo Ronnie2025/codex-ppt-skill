@@ -1,0 +1,27 @@
+{
+  "slide_size_px": [1920, 1080],
+  "final_deck_type": "semantic_editable_replica",
+  "source_image_policy": "reference only; do not embed the full source image in the final PPTX",
+  "items": [
+    {
+      "id": "title_main",
+      "class": "text",
+      "text": "Example slide title",
+      "bbox_px": [72, 56, 920, 72],
+      "ppt_role": "editable_text"
+    },
+    {
+      "id": "panel_main",
+      "class": "layout_native",
+      "bbox_px": [80, 180, 980, 620],
+      "ppt_role": "native_shape"
+    },
+    {
+      "id": "domain_icon_01",
+      "class": "imagegen_asset",
+      "bbox_px": [140, 240, 120, 120],
+      "semantic_unit_count": 1,
+      "ppt_role": "independent_image"
+    }
+  ]
+}

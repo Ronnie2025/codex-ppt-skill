@@ -69,6 +69,35 @@ Logo 规则：
 - 如果中文错字或乱码，减少文字量、放大文字块后重抽。
 - 真实 Logo、法律标识和合规印章一律后处理叠加，不交给 imagegen。
 
+## 语义资产网格提示词
+
+当目标是把图片页重建为可编辑 PPT 时，不要让 imagegen 生成整页截图，也不要直接裁原图当最终资产。应生成可透明化的 isolated asset grid：
+
+```text
+Create an isolated asset grid for a PowerPoint visual replica.
+Use the reference slide for style only. Create standalone assets, not slide crops.
+
+Objects in order:
+1. {generic_icon_01}
+2. {generic_icon_02}
+3. {workflow_arrow_01}
+4. {decorative_asset_01}
+
+Grid:
+{rows}x{cols}, generous margin, equal cells, each object centered.
+
+Background:
+uniform chroma key #00ff00 for later transparent cutout.
+
+Style:
+clean business presentation asset, consistent lighting, no surrounding card, no slide background.
+
+Negative constraints:
+no readable text, no numbers, no labels, no watermark, no logo, no QR code, no card frame, no rectangular crop border, no neighboring object fragments.
+```
+
+生成后用 `scripts/grid_cut.py` 切成一个语义单元一个 PNG，再插入 PPT。
+
 ## 通用示例：风险升级路径页
 
 这个示例来自一次真实生图 PPT 流程，但已去除具体品牌、客户和内部信息，可作为“链路型说明页”的提示词参考。
