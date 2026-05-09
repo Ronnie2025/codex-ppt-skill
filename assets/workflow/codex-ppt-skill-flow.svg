@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1320" viewBox="0 0 1920 1320" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1420" viewBox="0 0 1920 1420" role="img" aria-labelledby="title desc">
   <title id="title">Codex PPT Skill 三路径流程图</title>
-  <desc id="desc">展示从输入材料到目标判断，再分流为整页生图 PPT、SVG 结构重绘和语义资产重组三条路径，并列出输出物与共同 QA。</desc>
+  <desc id="desc">展示从输入材料到目标判断，再分流为整页生图 PPT、语义资产重组和 SVG 结构重绘三条路径；路径 A 的输出页图也可以继续进入路径 B 或路径 C。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#f7fbff"/>
@@ -50,14 +50,14 @@
     </style>
   </defs>
 
-  <rect width="1920" height="1320" fill="url(#bg)"/>
+  <rect width="1920" height="1420" fill="url(#bg)"/>
   <circle cx="1630" cy="150" r="96" fill="#eaf4ff"/>
-  <circle cx="1720" cy="1130" r="140" fill="#eef8f7"/>
+  <circle cx="1720" cy="1240" r="140" fill="#eef8f7"/>
   <circle cx="170" cy="1090" r="110" fill="#fff3ee"/>
 
   <text x="90" y="96" class="mono">CODEX PPT SKILL</text>
   <text x="90" y="166" class="title">PPT 生成与图片页重建的三条路径</text>
-  <text x="90" y="214" class="subtitle">先判断用户到底要什么交付，再进入对应流程；每条路径都写清楚边界、输出物和 QA 证据。</text>
+  <text x="90" y="214" class="subtitle">可直接选择 A/B/C，也可先走 A 确认视觉页图，再把单页 PNG 交给 B 或 C 做二次转换。</text>
 
   <g filter="url(#shadow)">
     <rect x="90" y="282" width="360" height="154" rx="24" fill="#17253b"/>
@@ -72,8 +72,8 @@
     <rect x="560" y="260" width="800" height="198" rx="28" fill="#ffffff" stroke="#d8e5f2" stroke-width="2"/>
     <text x="606" y="318" class="section">目标判断：先定交付承诺</text>
     <text x="606" y="364" class="body">1. 只要视觉展示、PPTX 或 PDF？</text>
-    <text x="606" y="398" class="body">2. 只要把页面结构拆成 SVG，用于文档或网页复用？</text>
-    <text x="606" y="432" class="body">3. 要 PowerPoint 内对象级编辑，并保留图标、箭头、3D 装饰？</text>
+    <text x="606" y="398" class="body">2. 要 PowerPoint 内对象级编辑，并保留图标、箭头、3D 装饰？</text>
+    <text x="606" y="432" class="body">3. 只要把页面结构拆成 SVG，用于文档或网页复用？</text>
   </g>
 
   <path d="M1360 359 H1468" stroke="#7e91aa" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
@@ -86,8 +86,8 @@
   </g>
 
   <path d="M820 458 C690 510 430 510 322 560" stroke="#236fdf" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
-  <path d="M960 458 C960 508 960 520 960 560" stroke="#159893" stroke-width="4" fill="none" marker-end="url(#arrowTeal)"/>
-  <path d="M1100 458 C1240 510 1490 510 1598 560" stroke="#dd5b4b" stroke-width="4" fill="none" marker-end="url(#arrowCoral)"/>
+  <path d="M960 458 C960 508 960 520 960 560" stroke="#dd5b4b" stroke-width="4" fill="none" marker-end="url(#arrowCoral)"/>
+  <path d="M1100 458 C1240 510 1490 510 1598 560" stroke="#159893" stroke-width="4" fill="none" marker-end="url(#arrowTeal)"/>
 
   <g filter="url(#shadow)">
     <rect x="90" y="570" width="520" height="424" rx="30" fill="#ffffff" stroke="#d9e8f4" stroke-width="2"/>
@@ -110,48 +110,57 @@
 
   <g filter="url(#shadow)">
     <rect x="700" y="570" width="520" height="424" rx="30" fill="#ffffff" stroke="#d9e8f4" stroke-width="2"/>
-    <rect x="700" y="570" width="520" height="86" rx="30" fill="url(#teal)"/>
-    <text x="738" y="624" class="whiteTitle">路径 B：SVG 结构重绘</text>
-    <text x="738" y="691" class="body">适合：要 SVG、网页/文档复用，或先做轻量矢量样板。</text>
+    <rect x="700" y="570" width="520" height="86" rx="30" fill="url(#coral)"/>
+    <text x="738" y="624" class="whiteTitle">路径 B：语义资产重组</text>
+    <text x="738" y="691" class="body">优先：要可编辑 PPTX，并保留关键视觉元素。</text>
 
-    <circle cx="744" cy="744" r="18" fill="#159893"/><text x="744" y="751" text-anchor="middle" class="stepNum">1</text>
-    <text x="780" y="751" class="stepText">识别文本、容器、线条、箭头、图标</text>
-    <circle cx="744" cy="795" r="18" fill="#159893"/><text x="744" y="802" text-anchor="middle" class="stepNum">2</text>
-    <text x="780" y="802" class="stepText">用原生 SVG 重建页面层级</text>
-    <circle cx="744" cy="846" r="18" fill="#159893"/><text x="744" y="853" text-anchor="middle" class="stepNum">3</text>
-    <text x="780" y="853" class="stepText">输出 SVG 和 PNG 预览</text>
-    <circle cx="744" cy="897" r="18" fill="#159893"/><text x="744" y="904" text-anchor="middle" class="stepNum">4</text>
-    <text x="780" y="904" class="stepText">如需 PPTX，再判断是否进入路径 C</text>
+    <circle cx="744" cy="744" r="18" fill="#dd5b4b"/><text x="744" y="751" text-anchor="middle" class="stepNum">1</text>
+    <text x="780" y="751" class="stepText">建立 visual_inventory 和 asset_anchors</text>
+    <circle cx="744" cy="795" r="18" fill="#dd5b4b"/><text x="744" y="802" text-anchor="middle" class="stepNum">2</text>
+    <text x="780" y="802" class="stepText">生成无文字 isolated asset grid</text>
+    <circle cx="744" cy="846" r="18" fill="#dd5b4b"/><text x="744" y="853" text-anchor="middle" class="stepNum">3</text>
+    <text x="780" y="853" class="stepText">切成一个语义单元一个透明 PNG</text>
+    <circle cx="744" cy="897" r="18" fill="#dd5b4b"/><text x="744" y="904" text-anchor="middle" class="stepNum">4</text>
+    <text x="780" y="904" class="stepText">原生文字/形状 + 透明资产组装 PPTX</text>
 
-    <rect x="738" y="930" width="444" height="40" rx="20" fill="#eefaf8"/>
-    <text x="760" y="956" class="note">边界：SVG 嵌入 PPT 不等于对象级可编辑。</text>
+    <rect x="738" y="930" width="444" height="40" rx="20" fill="#fff1ee"/>
+    <text x="760" y="956" class="note">边界：不使用整页原图或硬裁片做最终素材。</text>
   </g>
 
   <g filter="url(#shadow)">
     <rect x="1310" y="570" width="520" height="424" rx="30" fill="#ffffff" stroke="#d9e8f4" stroke-width="2"/>
-    <rect x="1310" y="570" width="520" height="86" rx="30" fill="url(#coral)"/>
-    <text x="1348" y="624" class="whiteTitle">路径 C：语义资产重组</text>
-    <text x="1348" y="691" class="body">适合：要可编辑 PPTX，并保留关键视觉元素。</text>
+    <rect x="1310" y="570" width="520" height="86" rx="30" fill="url(#teal)"/>
+    <text x="1348" y="624" class="whiteTitle">路径 C：SVG 结构重绘</text>
+    <text x="1348" y="691" class="body">适合：要 SVG、网页/文档复用，或低成本结构样板。</text>
 
-    <circle cx="1354" cy="744" r="18" fill="#dd5b4b"/><text x="1354" y="751" text-anchor="middle" class="stepNum">1</text>
-    <text x="1390" y="751" class="stepText">建立 visual_inventory 和 asset_anchors</text>
-    <circle cx="1354" cy="795" r="18" fill="#dd5b4b"/><text x="1354" y="802" text-anchor="middle" class="stepNum">2</text>
-    <text x="1390" y="802" class="stepText">生成无文字 isolated asset grid</text>
-    <circle cx="1354" cy="846" r="18" fill="#dd5b4b"/><text x="1354" y="853" text-anchor="middle" class="stepNum">3</text>
-    <text x="1390" y="853" class="stepText">切成一个语义单元一个透明 PNG</text>
-    <circle cx="1354" cy="897" r="18" fill="#dd5b4b"/><text x="1354" y="904" text-anchor="middle" class="stepNum">4</text>
-    <text x="1390" y="904" class="stepText">原生文字/形状 + 透明资产组装 PPTX</text>
+    <circle cx="1354" cy="744" r="18" fill="#159893"/><text x="1354" y="751" text-anchor="middle" class="stepNum">1</text>
+    <text x="1390" y="751" class="stepText">识别文本、容器、线条、箭头、图标</text>
+    <circle cx="1354" cy="795" r="18" fill="#159893"/><text x="1354" y="802" text-anchor="middle" class="stepNum">2</text>
+    <text x="1390" y="802" class="stepText">用原生 SVG 重建页面层级</text>
+    <circle cx="1354" cy="846" r="18" fill="#159893"/><text x="1354" y="853" text-anchor="middle" class="stepNum">3</text>
+    <text x="1390" y="853" class="stepText">输出 SVG 和 PNG 预览</text>
+    <circle cx="1354" cy="897" r="18" fill="#159893"/><text x="1354" y="904" text-anchor="middle" class="stepNum">4</text>
+    <text x="1390" y="904" class="stepText">如需对象级编辑，再进入路径 B</text>
 
-    <rect x="1348" y="930" width="444" height="40" rx="20" fill="#fff1ee"/>
-    <text x="1370" y="956" class="note">边界：不使用整页原图或硬裁片做最终素材。</text>
+    <rect x="1348" y="930" width="444" height="40" rx="20" fill="#eefaf8"/>
+    <text x="1370" y="956" class="note">边界：SVG 嵌入 PPT 不等于对象级可编辑。</text>
   </g>
 
+  <path d="M350 994 C445 1058 535 1074 641 1074" stroke="#236fdf" stroke-width="4" stroke-dasharray="10 10" fill="none" marker-end="url(#arrowBlue)"/>
   <g filter="url(#shadow)">
-    <rect x="120" y="1068" width="1680" height="152" rx="32" fill="#17253b"/>
-    <text x="162" y="1124" class="whiteTitle">共同 QA 与发布检查</text>
-    <text x="162" y="1170" class="whiteBody">整页图路径：16:9 裁切、Logo 后叠、PDF/汇总预览图复核。</text>
-    <text x="725" y="1170" class="whiteBody">SVG 路径：SVG/PNG 预览，说明简化对象与 PPT 边界。</text>
-    <text x="1250" y="1170" class="whiteBody">重建路径：diff heatmap、manifest、validation report。</text>
-    <text x="162" y="1206" class="whiteBody">发布前统一跑公开审计：不带私有路径、密钥、客户残留或本地验证产物。</text>
+    <rect x="650" y="1032" width="620" height="96" rx="28" fill="#ffffff" stroke="#d7e4f1" stroke-width="2"/>
+    <text x="690" y="1071" class="label">路径 A 也可以作为中间态</text>
+    <text x="690" y="1106" class="body">整页 PNG / PDF 确认后，可继续作为 B 或 C 的参考输入。</text>
+  </g>
+  <path d="M960 1032 C960 1018 960 1008 960 996" stroke="#dd5b4b" stroke-width="4" stroke-dasharray="10 10" fill="none" marker-end="url(#arrowCoral)"/>
+  <path d="M1270 1078 C1380 1076 1500 1048 1570 996" stroke="#159893" stroke-width="4" stroke-dasharray="10 10" fill="none" marker-end="url(#arrowTeal)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="120" y="1190" width="1680" height="152" rx="32" fill="#17253b"/>
+    <text x="162" y="1246" class="whiteTitle">共同 QA 与交付检查</text>
+    <text x="162" y="1292" class="whiteBody">整页图路径：16:9 裁切、Logo 后叠、PDF/汇总预览图复核。</text>
+    <text x="725" y="1292" class="whiteBody">重建路径：diff heatmap、manifest、validation report。</text>
+    <text x="1250" y="1292" class="whiteBody">SVG 路径：SVG/PNG 预览，说明简化对象与 PPT 边界。</text>
+    <text x="162" y="1328" class="whiteBody">最终交付要保留预览、对比、验证报告和已知限制说明。</text>
   </g>
 </svg>
